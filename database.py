@@ -91,5 +91,20 @@ def init_db():
         )
     """)
 
+
+    # 5. Focus Sessions table (from Smart Study Focus integration)
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS focus_sessions (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER NOT NULL,
+            mode TEXT NOT NULL,
+            goal_minutes INTEGER NOT NULL,
+            focused_seconds INTEGER NOT NULL,
+            total_seconds INTEGER NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
+        )
+    """)
+
     conn.commit()
     conn.close()

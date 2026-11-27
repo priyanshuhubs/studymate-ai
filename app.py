@@ -442,6 +442,48 @@ def delete_schedule(schedule_id):
     flash("Study schedule deleted.", "info")
     return redirect(url_for("planner"))
 
+# ---------------------------------------------------------------------------
+# Page 6: Smart Focus Mode (Camera & No-Camera Distraction Tracker)
+# ---------------------------------------------------------------------------
+@app.route("/focus")
+@login_required
+def focus_mode():
+    """Displays the Focus Mode tracker and saved focus session history."""
+    conn = get_db_connection()
+    sessions = conn.execute(
+        """
+        SELECT * FROM focus_sessions
+        WHERE user_id = ?
+        ORDER BY created_at DESC
+        LIMIT 12
+        """,
+        (session["user_id"],),
+    ).fetchall()
+    conn.close()
+    return render_template("focus.html", sessions=sessions)
+
+
+@app.route("/api/focus/save", methods=["POST"])
+@login_required
+def api_save_focus_session():
+    """Saves a completed Focus Mode session to SQLite."""
+    data = request.get_json(silent=True) or {}
+    mode = data.get("mode", "Camera Focus").strip()
+    goal_minutes = int(data.get("goal_minutes", 25))
+    focused_seconds = int(data.get("focused_seconds", 0))
+    total_seconds = int(data.get("total_seconds", 0))
+
+    conn = get_db_connection()
+    conn.execute(
+        """
+        INSERT INTO focus_sessions (user_id, mode, goal_minutes, focused_seconds, total_seconds)
+        VALUES (?, ?, ?, ?, ?)
+        """,
+        (session["user_id"], mode, goal_minutes, focused_seconds, total_seconds),
+    )
+    conn.commit()
+    conn.close()
+    return jsonify({"status": "saved"})
 
 # ---------------------------------------------------------------------------
 # Run the Flask development server
