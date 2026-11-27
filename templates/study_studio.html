@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+{% block title %}AI Study Studio{% endblock %}
+
+{% block content %}
+<!-- Page 4: AI Study Studio (Notes, Summaries, Revision Questions, Assignment Outlines) -->
+<header class="page-header">
+  <div>
+    <h1>AI Study Studio</h1>
+    <p class="muted">
+      Turn raw lecture text into structured study notes, summaries, revision questions, or assignment outlines using Gemini AI.
+    </p>
+  </div>
+</header>
+
+<!-- Mode Switcher Tabs -->
+<div class="tab-bar" id="studioTabs">
+  <button type="button" class="tab-btn active" data-mode="notes">Study Notes</button>
+  <button type="button" class="tab-btn" data-mode="summary">Summarize Material</button>
+  <button type="button" class="tab-btn" data-mode="questions">Revision Questions</button>
+  <button type="button" class="tab-btn" data-mode="outline">Assignment Outline</button>
+</div>
+
+<!-- Studio Input + Live AI Output Grid -->
+<section class="two-col-grid">
+  <!-- Input Form -->
+  <div class="card">
+    <h2 id="studioFormTitle">Generate Study Notes</h2>
+    <p class="muted small" id="studioFormHint">
+      Paste a paragraph, textbook excerpt, or lecture transcript below.
+    </p>
+
+    <form id="studyStudioForm" class="form-stack">
+      <input type="hidden" id="studioMode" value="notes" />
+
+      <div class="form-group">
+        <label for="studioTitle">Topic / Title</label>
+        <input
+          type="text"
+          id="studioTitle"
+          placeholder="e.g., Operating Systems - Deadlocks"
+          required
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="studioSourceText" id="sourceTextLabel">Study Material / Text</label>
+        <textarea
+          id="studioSourceText"
+          rows="8"
+          placeholder="Paste your study text, notes, or assignment prompt here..."
+          required
+        ></textarea>
+      </div>
+
+      <div class="form-group" id="extraOptionGroup" style="display: none;">
+        <label for="studioExtraOption" id="extraOptionLabel">Additional Preference</label>
+        <input
+          type="text"
+          id="studioExtraOption"
+          placeholder="e.g., Exam difficulty: Medium, or Word count: 1500 words"
+        />
+      </div>
+
+      <button type="submit" id="studioSubmitBtn" class="btn btn-primary btn-full">
+        ✦ Generate with Gemini AI
+      </button>
+    </form>
+  </div>
+
+  <!-- Live AI Output Panel -->
+  <div class="card output-card">
+    <div class="card-header-row">
+      <h2>AI Output</h2>
+      <button type="button" id="copyStudioBtn" class="btn btn-outline btn-sm" style="display: none;">
+        Copy Output
+      </button>
+    </div>
+
+    <div id="studioOutput" class="ai-output-box">
+      <div class="empty-state">
+        <p>Your AI-generated notes, summaries, questions, or outlines will appear here.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Saved Study Materials Library -->
+<section class="card mt-lg">
+  <h2>Saved Study Library ({{ materials|length }})</h2>
+  <p class="muted small">All generated materials are automatically saved to your account.</p>
+
+  {% if materials %}
+    <div class="saved-grid">
+      {% for item in materials %}
+        <article class="saved-card">
+          <div class="card-header-row">
+            <div>
+              <span class="badge badge-type">{{ item.material_type|upper }}</span>
+              <h3>{{ item.title }}</h3>
+            </div>
+            <form method="POST" action="{{ url_for('delete_material', material_id=item.id) }}">
+              <button type="submit" class="btn-icon-danger" title="Delete">&times;</button>
+            </form>
+          </div>
+          <div class="saved-preview markdown-source">{{ item.ai_output }}</div>
+          <span class="muted tiny">Saved on {{ item.created_at }}</span>
+        </article>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="empty-state">
+      <p>No saved study materials yet. Generate your first set of notes above!</p>
+    </div>
+  {% endif %}
+</section>
+{% endblock %}

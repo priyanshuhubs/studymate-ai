@@ -1,0 +1,19 @@
+# Python cache & virtual environments
+__pycache__/
+*.py[cod]
+venv/
+.venv/
+env/
+
+# Environment variables (NEVER upload your real API key to GitHub)
+.env
+
+# Local SQLite database file (generated automatically when running app.py)
+studymate.db
+*.sqlite3
+
+# Editor / OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

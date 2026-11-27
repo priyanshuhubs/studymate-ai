@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+{% block title %}Dashboard & Tasks{% endblock %}
+
+{% block content %}
+<!-- Page 3: Dashboard & Learning Task Organizer -->
+<header class="page-header">
+  <div>
+    <h1>Academic Dashboard</h1>
+    <p class="muted">Track your learning tasks and jump straight into AI-powered study tools.</p>
+  </div>
+  <div class="header-actions">
+    <a href="{{ url_for('study_studio') }}" class="btn btn-primary">Open AI Study Studio</a>
+    <a href="{{ url_for('planner') }}" class="btn btn-secondary">Build Study Schedule</a>
+  </div>
+</header>
+
+<!-- Quick Stats Row -->
+<section class="stats-grid">
+  <div class="stat-card">
+    <span class="stat-label">Pending Tasks</span>
+    <span class="stat-value">{{ stats.pending_tasks }}</span>
+  </div>
+  <div class="stat-card">
+    <span class="stat-label">Completed Tasks</span>
+    <span class="stat-value accent-teal">{{ stats.completed_tasks }}</span>
+  </div>
+  <div class="stat-card">
+    <span class="stat-label">Saved AI Study Materials</span>
+    <span class="stat-value accent-indigo">{{ stats.material_count }}</span>
+  </div>
+  <div class="stat-card">
+    <span class="stat-label">Saved Study Schedules</span>
+    <span class="stat-value accent-amber">{{ stats.schedule_count }}</span>
+  </div>
+</section>
+
+<!-- Two-Column Workspace: Add Task Form + Organized Task List -->
+<section class="two-col-grid">
+  <!-- Left Column: Add a New Learning Task -->
+  <div class="card">
+    <h2>Add Learning Task</h2>
+    <p class="muted small">Organize assignments, chapters to revise, or exam deadlines.</p>
+
+    <form method="POST" action="{{ url_for('add_task') }}" class="form-stack">
+      <div class="form-group">
+        <label for="title">Task Title</label>
+        <input
+          type="text"
+          id="title"
+          name="title"
+          placeholder="e.g., Revise DBMS Normalization"
+          required
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="subject">Subject</label>
+        <input
+          type="text"
+          id="subject"
+          name="subject"
+          placeholder="e.g., Python, Web Tech, MySQL"
+        />
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="priority">Priority</label>
+          <select id="priority" name="priority">
+            <option value="High">High</option>
+            <option value="Medium" selected>Medium</option>
+            <option value="Low">Low</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="due_date">Due Date</label>
+          <input type="date" id="due_date" name="due_date" />
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-primary btn-full">+ Add Task</button>
+    </form>
+  </div>
+
+  <!-- Right Column: Task List with Client-Side Filter -->
+  <div class="card">
+    <div class="card-header-row">
+      <h2>Your Learning Tasks ({{ stats.total_tasks }})</h2>
+      <div class="filter-bar">
+        <button type="button" class="filter-btn active" data-filter="all">All</button>
+        <button type="button" class="filter-btn" data-filter="pending">Pending</button>
+        <button type="button" class="filter-btn" data-filter="completed">Completed</button>
+      </div>
+    </div>
+
+    {% if tasks %}
+      <ul class="task-list" id="taskList">
+        {% for task in tasks %}
+          <li class="task-item {{ 'task-done' if task.is_completed else '' }}"
+              data-status="{{ 'completed' if task.is_completed else 'pending' }}">
+            <div class="task-main">
+              <!-- Toggle Complete Button -->
+              <form method="POST" action="{{ url_for('toggle_task', task_id=task.id) }}">
+                <button type="submit"
+                        class="check-btn {{ 'checked' if task.is_completed else '' }}"
+                        title="Mark as {{ 'pending' if task.is_completed else 'completed' }}">
+                  {{ '✓' if task.is_completed else '' }}
+                </button>
+              </form>
+
+              <div class="task-details">
+                <span class="task-title">{{ task.title }}</span>
+                <div class="task-meta">
+                  <span class="badge badge-subject">{{ task.subject }}</span>
+                  <span class="badge badge-priority-{{ task.priority|lower }}">{{ task.priority }}</span>
+                  {% if task.due_date %}
+                    <span class="muted small">Due: {{ task.due_date }}</span>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+
+            <!-- Delete Task Button -->
+            <form method="POST" action="{{ url_for('delete_task', task_id=task.id) }}">
+              <button type="submit" class="btn-icon-danger" title="Delete task">&times;</button>
+            </form>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <div class="empty-state">
+        <p>No learning tasks yet. Add your first study goal or assignment on the left!</p>
+      </div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

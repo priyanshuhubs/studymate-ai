@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}StudyMate AI{% endblock %} | Academic Productivity Assistant</title>
+  <!-- Main Dark Theme Stylesheet -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+</head>
+<body>
+  <!-- Top Navigation Bar (shown on authenticated pages) -->
+  {% if session.get('user_id') %}
+  <nav class="navbar">
+    <div class="nav-brand">
+      <a href="{{ url_for('dashboard') }}" class="brand-link">
+        <span class="brand-icon">✦</span>
+        <span>StudyMate <strong>AI</strong></span>
+      </a>
+      <span class="ai-pill {{ 'ai-live' if gemini_live else 'ai-demo' }}"
+            title="{{ 'Connected to live Gemini API' if gemini_live else 'Add GEMINI_API_KEY in .env to enable live AI' }}">
+        {{ 'Gemini Live' if gemini_live else 'Demo Mode' }}
+      </span>
+    </div>
+
+    <div class="nav-links">
+      <a href="{{ url_for('dashboard') }}"
+         class="nav-item {{ 'active' if request.endpoint == 'dashboard' else '' }}">
+        Dashboard &amp; Tasks
+      </a>
+      <a href="{{ url_for('study_studio') }}"
+         class="nav-item {{ 'active' if request.endpoint == 'study_studio' else '' }}">
+        AI Study Studio
+      </a>
+      <a href="{{ url_for('planner') }}"
+         class="nav-item {{ 'active' if request.endpoint == 'planner' else '' }}">
+        Study Planner
+      </a>
+    </div>
+
+    <div class="nav-user">
+      <span class="user-greeting">Hi, {{ current_user_name }}</span>
+      <a href="{{ url_for('logout') }}" class="btn btn-outline btn-sm">Logout</a>
+    </div>
+  </nav>
+  {% endif %}
+
+  <!-- Main Content Area -->
+  <main class="container">
+    <!-- Flash Messages (Success, Error, Info, Warning) -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="flash-stack">
+          {% for category, message in messages %}
+            <div class="flash flash-{{ category }}">
+              <span>{{ message }}</span>
+              <button type="button" class="flash-close" onclick="this.parentElement.remove()">&times;</button>
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <!-- Page-Specific Content -->
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- Simple Footer -->
+  <footer class="footer">
+    <p>StudyMate AI &mdash; Built with Python, Flask &amp; Google Gemini</p>
+  </footer>
+
+  <!-- Main JavaScript File -->
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
