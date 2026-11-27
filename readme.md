@@ -101,17 +101,5 @@ studymate-ai/
    ```
    Open `http://127.0.0.1:5000` (or `http://127.0.0.1:5001` if configured on port 5001) in your browser.
 
-## Team Members
 
-| # | Name | Role / Contribution | GitHub Profile |
-|---|------|---------------------|----------------|
-| 1 | [Member 1 Name] | [Backend & Gemini AI Integration] | [@member1-username] |
-| 2 | [Member 2 Name] | [Frontend Templates & Dark Theme CSS] | [@member2-username] |
-| 3 | [Member 3 Name] | [JavaScript Interactivity & Study Planner] | [@member3-username] |
-| 4 | [Member 4 Name] | [Database Design, Testing & Documentation] | [@member4-username] |
 
-## Course & Submission Info
-
-- **Course / Subject:** [Subject or Course Name]
-- **Institution:** [College / University Name]
-- **Submitted To:** [Teacher / Faculty Name]
