@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% block title %}Focus Mode{% endblock %}
+
+{% block content %}
+<header class="page-header">
+  <div>
+    <h1>Smart Focus Mode</h1>
+    <p class="muted">Distraction-free study timer with optional browser camera attention tracking.</p>
+  </div>
+</header>
+
+<section class="two-col-grid">
+  <!-- Left: Controls & Timer -->
+  <div class="card">
+    <h2>Session Controls</h2>
+    <div class="form-stack">
+      <div class="form-row">
+        <div class="form-group">
+          <label for="focusModeSelect">Tracking Mode</label>
+          <select id="focusModeSelect">
+            <option value="Camera Focus">Camera Focus (AI Attention)</option>
+            <option value="Timer Only">No-Camera Timer</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="focusGoalMinutes">Goal (Minutes)</label>
+          <input type="number" id="focusGoalMinutes" value="25" min="1" max="180" />
+        </div>
+      </div>
+
+      <div class="stats-grid" style="margin-bottom: 0.5rem;">
+        <div class="stat-card">
+          <span class="stat-label">Focused Time</span>
+          <span class="stat-value accent-teal" id="focusedTimeDisplay">00:00</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">Elapsed Time</span>
+          <span class="stat-value accent-indigo" id="totalTimeDisplay">00:00</span>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <button type="button" id="startFocusBtn" class="btn btn-primary">Start Session</button>
+        <button type="button" id="stopFocusBtn" class="btn btn-outline" disabled>Finish &amp; Save</button>
+      </div>
+      <p id="focusSaveMsg" class="small muted"></p>
+    </div>
+  </div>
+
+  <!-- Right: Live Camera Feed & Attention Status -->
+  <div class="card">
+    <div class="card-header-row">
+      <h2>Attention Monitor</h2>
+      <span id="focusStatusBadge" class="badge badge-type">Ready</span>
+    </div>
+    <div style="position: relative; background: #0f172a; border-radius: 8px; overflow: hidden; min-height: 260px; display: flex; align-items: center; justify-content: center;">
+      <video id="focusVideo" autoplay playsinline muted style="width: 100%; max-height: 300px; object-fit: cover; transform: scaleX(-1);"></video>
+      <p id="cameraPlaceholder" class="muted small" style="position: absolute;">Camera starts when you click Start Session.</p>
+    </div>
+  </div>
+</section>
+
+<!-- Saved Focus Sessions -->
+<section class="card mt-lg">
+  <div class="card-header-row">
+    <h2>Recent Focus Sessions ({{ sessions|length }})</h2>
+    <a href="{{ url_for('export_focus_csv') }}" class="btn btn-outline btn-sm">Download CSV Report</a>
+  </div>
+  {% if sessions %}
+    <div class="saved-grid">
+      {% for s in sessions %}
+        <article class="saved-card">
+          <span class="badge badge-type">{{ s.mode }}</span>
+          <h3>Focused {{ (s.focused_seconds // 60) }}m {{ (s.focused_seconds % 60) }}s</h3>
+          <p class="muted small">Goal: {{ s.goal_minutes }} min &bull; Total: {{ (s.total_seconds // 60) }}m {{ (s.total_seconds % 60) }}s</p>
+          <span class="muted tiny">{{ s.created_at }}</span>
+        </article>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="empty-state">
+      <p>No focus sessions recorded yet. Start your first session above!</p>
+    </div>
+  {% endif %}
+</section>
+
+<script type="module" src="{{ url_for('static', filename='js/focus.js') }}"></script>
+{% endblock %}

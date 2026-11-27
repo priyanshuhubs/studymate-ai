@@ -31,6 +31,10 @@
          class="nav-item {{ 'active' if request.endpoint == 'study_studio' else '' }}">
         AI Study Studio
       </a>
+      <a href="{{ url_for('focus_mode') }}"
+         class="nav-item {{ 'active' if request.endpoint == 'focus_mode' else '' }}">
+        Focus Mode
+      </a>
       <a href="{{ url_for('planner') }}"
          class="nav-item {{ 'active' if request.endpoint == 'planner' else '' }}">
         Study Planner
@@ -64,9 +68,33 @@
     {% block content %}{% endblock %}
   </main>
 
-  <!-- Simple Footer -->
+<!-- Cool Developer / Owner Footer -->
   <footer class="footer">
-    <p>StudyMate AI &mdash; Built with Python, Flask &amp; Google Gemini</p>
+    <div class="footer-container">
+      <div class="footer-brand">
+        <span class="brand-icon">✦</span>
+        <div>
+          <strong>StudyMate AI</strong>
+          <p class="muted tiny">Academic Productivity &amp; Focus Assistant</p>
+        </div>
+      </div>
+
+      <div class="footer-contact">
+        <a href="priyanshunegi242@gmail.com" class="footer-link">priyanshunegi242@gmail.com</a>
+        <span class="footer-dot">&bull;</span>
+        <a href="tel:+918057944866" class="footer-link">+91 80579 44866</a>
+      </div>
+
+      <div class="footer-socials">
+        <a href="https://github.com/priyanshuhubs" target="_blank" rel="noopener" class="social-pill">GitHub</a>
+        <a href="https://www.linkedin.com/in/priyanshu-negi-a26a76384/" target="_blank" rel="noopener" class="social-pill">LinkedIn</a>
+        <a href="https://www.instagram.com/priyanshunegi.uk/" target="_blank" rel="noopener" class="social-pill">Instagram</a>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p>&copy; 2026 StudyMate AI &bull; Built by <strong>Priyanshu &amp; Team</strong></p>
+    </div>
   </footer>
 
   <!-- Main JavaScript File -->

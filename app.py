@@ -11,6 +11,8 @@ Pages (5-page wireframe):
   5. /planner       - Personalized AI Study Schedule Planner
 """
 
+import csv
+import io
 import os
 from functools import wraps
 from dotenv import load_dotenv
@@ -485,6 +487,35 @@ def api_save_focus_session():
     conn.close()
     return jsonify({"status": "saved"})
 
+
+
+@app.route("/focus/export")
+@login_required
+def export_focus_csv():
+    """Exports the student's focus sessions as a downloadable CSV report."""
+    conn = get_db_connection()
+    rows = conn.execute(
+        """
+        SELECT mode, goal_minutes, focused_seconds, total_seconds, created_at
+        FROM focus_sessions
+        WHERE user_id = ?
+        ORDER BY created_at DESC
+        """,
+        (session["user_id"],),
+    ).fetchall()
+    conn.close()
+
+    output = io.StringIO()
+    writer = csv.writer(output)
+    writer.writerow(["Mode", "Goal (min)", "Focused (sec)", "Total (sec)", "Date"])
+    for r in rows:
+        writer.writerow([r["mode"], r["goal_minutes"], r["focused_seconds"], r["total_seconds"], r["created_at"]])
+
+    return Response(
+        output.getvalue(),
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment; filename=focus_report.csv"},
+    )
 # ---------------------------------------------------------------------------
 # Run the Flask development server
 # ---------------------------------------------------------------------------
